@@ -1,0 +1,36 @@
+% Drum key shared by all generated scores (edit once here).
+#(define book-drums
+   '((acousticbassdrum () #f -3)
+     (bassdrum () #f -3)
+     (sidestick cross #f 1)
+     (acousticsnare () #f 1)
+     (snare () #f 1)
+     (handclap triangle #f 1)
+     (electricsnare () #f 1)
+     (lowfloortom () #f -4)
+     (closedhihat cross stopped 3)
+     (hihat cross #f 5)
+     (highfloortom () #f -2)
+     (pedalhihat cross #f -5)
+     (lowtom () #f -1)
+     (openhihat cross #f 3)
+     (halfopenhihat xcircle #f 3)
+     (lowmidtom () #f 0)
+     (himidtom () #f 2)
+     (crashcymbala xcircle #f 5)
+     (crashcymbal xcircle #f 5)
+     (hightom () #f 4)
+     (ridecymbala cross #f 5)
+     (ridecymbal cross #f 5)
+     (chinesecymbal mensural #f 5)
+     (ridebell () #f 5)
+     (splashcymbal diamond #f 5)
+     (cowbell triangle #f 5)
+     (crashcymbalb cross #f 5)
+     (ridecymbalb cross #f 5)
+     (tambourine () #f 1)))
+
+% Stick-click count-in (shared by the nt1.x exercises)
+ticTwo = \drummode { ss2\p ss2 }
+ticFour = \drummode { ss4 ss4 ss4 ss4 }
+tics = \drummode { \ticTwo \ticFour }
