@@ -54,7 +54,10 @@ music = \drummode {
     drumStyleTable = #(alist->hash-table book-drums)
   } {
     \tempo 4 = 88
-    \unfoldRepeats \music
+    \drummode {
+      \ticFour
+      \unfoldRepeats \music
+    }
   }
   \midi { }
 }

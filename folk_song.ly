@@ -28,8 +28,6 @@ banjo = {
   \numericTimeSignature
   \time 4/4
   \set Staff.midiInstrument = "banjo"
-  \set Staff.midiMinimumVolume = #0.25
-  \set Staff.midiMaximumVolume = #0.70
   \rollG \rollEm \rollC \rollD
   \rollG \rollEm \rollC \rollD
 }
@@ -42,16 +40,13 @@ fillA  = \drummode { ss8 ss8 toml8 toml8 ss8 ss8 <ss tamb>4 }
 fillB  = \drummode { toml8 toml8 tommh8 tommh8 tomh8 tomh8 <ss bd>4 }
 
 perc = \drummode {
-  \tempo 4 = 100
   \numericTimeSignature
   \time 4/4
-  \set Staff.midiMinimumVolume = #0.20
-  \set Staff.midiMaximumVolume = #0.80
   \groove \groove \accent \fillA
   \groove \drive  \accent \fillB
 }
 
-% ---------- score ----------
+% ---------- printed score: no count-in ----------
 \score {
   \new StaffGroup <<
     \new Staff \with { instrumentName = "Flute" } { \flute }
@@ -59,8 +54,20 @@ perc = \drummode {
     \new DrumStaff \with {
       instrumentName = "Percussion"
       drumStyleTable = #(alist->hash-table book-drums)
-    } { \perc }
+    } { \tempo 4 = 88 \perc }
   >>
   \layout { }
+}
+
+% ---------- playback: stick-click count-in, then the music ----------
+\score {
+  \new StaffGroup <<
+    \new Staff \with { instrumentName = "Flute" } { R1 \flute }
+    \new Staff \with { instrumentName = "Banjo" } { R1 \banjo }
+    \new DrumStaff \with {
+      instrumentName = "Percussion"
+      drumStyleTable = #(alist->hash-table book-drums)
+    } { \tempo 4 = 88 \ticFour \perc }
+  >>
   \midi { }
 }

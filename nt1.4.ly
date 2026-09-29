@@ -2,25 +2,38 @@
 
 \include "drums-key.ily"
 
-\header {
-  title = "nt1.4"
-  tagline = ##f
-}
-
-measureOne = \drummode { <bd hh>4\f hh4\mp hh4 hh4 }
-measureTwo = \drummode { sn4\mp tomh8\f tomh8 tommh8 tommh8 toml4 }
+measureOne = \drummode { <bd hh>4 hh4 hh4 hh4 }
+measureTwo = \drummode { sn4 tomh8 tomh8 tommh8 tommh8 toml4 }
 measureOneTwo = \drummode { \measureOne \measureTwo }
-whole = \drummode { \tics \repeat unfold 4 { \measureOneTwo } }
+whole = \drummode { \repeat unfold 4 { \measureOneTwo } }
 
+% printed score: no count-in
 \score {
+  \header {
+    piece = "nt1.4"
+    tagline = ##f
+  }
   \new DrumStaff \with {
     drumStyleTable = #(alist->hash-table book-drums)
   } {
-    \tempo 4 = 120
+    \tempo 4 = 88
     \drummode {
       \whole
     }
   }
   \layout { }
+}
+
+% playback: stick-click count-in, then the music
+\score {
+  \new DrumStaff \with {
+    drumStyleTable = #(alist->hash-table book-drums)
+  } {
+    \tempo 4 = 88
+    \drummode {
+      \ticFour
+      \whole
+    }
+  }
   \midi { }
 }

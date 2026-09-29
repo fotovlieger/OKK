@@ -30,7 +30,6 @@
      (ridecymbalb cross #f 5)
      (tambourine () #f 1)))
 
-% Stick-click count-in (shared by the nt1.x exercises)
-ticTwo = \drummode { ss2\p ss2 }
+% Stick-click count-in. This belongs in the \midi \score only, so it is
+% heard on playback but never printed in the PDF.
 ticFour = \drummode { ss4 ss4 ss4 ss4 }
-tics = \drummode { \ticTwo \ticFour }

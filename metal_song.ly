@@ -9,7 +9,6 @@
 
 % ---------- drums: double-bass 16ths + backbeat + hi-hat 8ths ----------
 drumPart = \drummode {
-  \tempo 4 = 165
   \numericTimeSignature
   \time 4/4
   <<
@@ -28,8 +27,6 @@ guitar = {
   \numericTimeSignature
   \time 4/4
   \set Staff.midiInstrument = "distorted guitar"
-  \set Staff.midiMinimumVolume = #0.20
-  \set Staff.midiMaximumVolume = #0.80
   \repeat unfold 2 {
     \repeat unfold 8 { <e, b, e>8 }    % E5
     \repeat unfold 8 { <g, d g>8 }     % G5
@@ -38,14 +35,24 @@ guitar = {
   }
 }
 
-% ---------- score ----------
+% ---------- printed score: no count-in ----------
 \score {
   \new StaffGroup <<
     \new DrumStaff \with {
       drumStyleTable = #(alist->hash-table book-drums)
-    } { \drumPart }
+    } { \tempo 4 = 88 \drumPart }
     \new Staff \with { instrumentName = "Guitar" } { \guitar }
   >>
   \layout { }
+}
+
+% ---------- playback: stick-click count-in, then the music ----------
+\score {
+  \new StaffGroup <<
+    \new DrumStaff \with {
+      drumStyleTable = #(alist->hash-table book-drums)
+    } { \tempo 4 = 88 \ticFour \drumPart }
+    \new Staff \with { instrumentName = "Guitar" } { R1 \guitar }
+  >>
   \midi { }
 }
