@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Prepend a 6-click count-in to a Standard MIDI File.
 
-Two long ticks, then four short ticks, one beat apart, on GM percussion
-(channel 10): side stick for long, closed hi-hat for short.
+Two long ticks two beats apart, then four short ticks one beat apart, on GM
+percussion (channel 10): side stick for all ticks. All ticks are quarter
+notes at the same volume.
 
 Usage:
     python3 prepend_ticks.py INPUT.mid [OUTPUT.mid]
@@ -16,9 +17,10 @@ from pathlib import Path
 
 # Count-in definition. Change these if you want another feel.
 N_LONG, N_SHORT = 2, 4
+LONG_GAP, SHORT_GAP = 2, 1       # beats between ticks
 CHANNEL = 9                      # 0-based: MIDI channel 10, GM percussion
-LONG_NOTE, SHORT_NOTE = 37, 42   # side stick, closed hi-hat
-LONG_VEL, SHORT_VEL = 110, 80
+LONG_NOTE, SHORT_NOTE = 37, 37   # side stick
+LONG_VEL, SHORT_VEL = 60,60
 
 
 def read_vlq(data, pos):
@@ -113,7 +115,9 @@ def note(status, pitch, velocity):
 
 def build_output(fmt, division, extra, tracks):
     beat = division
-    shift = (N_LONG + N_SHORT) * beat
+    long_gap = LONG_GAP * beat
+    short_gap = SHORT_GAP * beat
+    shift = N_LONG * long_gap + N_SHORT * short_gap
 
     # Keep the piece's initial tempo for the count-in. The original tempo
     # event also moves with the music, so no other tempo change is needed.
@@ -124,22 +128,22 @@ def build_output(fmt, division, extra, tracks):
                 if tempo is None or tick < tempo[0]:
                     tempo = (tick, ev)
 
-    long_dur = max(1, beat // 2)
-    short_dur = max(1, beat // 8)
+    click_dur = beat                # quarter note
     clicks = []
     seq = 0
     if tempo:
         clicks.append((0, seq, tempo[1]))
         seq += 1
     for i in range(N_LONG):
-        t = i * beat
+        t = i * long_gap
         clicks.append((t, seq, note(0x90 | CHANNEL, LONG_NOTE, LONG_VEL)))
-        clicks.append((t + long_dur, seq + 1, note(0x80 | CHANNEL, LONG_NOTE, 0)))
+        clicks.append((t + click_dur, seq + 1, note(0x80 | CHANNEL, LONG_NOTE, 0)))
         seq += 2
+    short_start = N_LONG * long_gap
     for i in range(N_SHORT):
-        t = (N_LONG + i) * beat
+        t = short_start + i * short_gap
         clicks.append((t, seq, note(0x90 | CHANNEL, SHORT_NOTE, SHORT_VEL)))
-        clicks.append((t + short_dur, seq + 1, note(0x80 | CHANNEL, SHORT_NOTE, 0)))
+        clicks.append((t + click_dur, seq + 1, note(0x80 | CHANNEL, SHORT_NOTE, 0)))
         seq += 2
 
     out_tracks = []
@@ -189,7 +193,7 @@ def verify(path, division, original_count, added_count, expected_ons):
     for track in tracks:
         if track[-1][2][0:2] != b"\xFF\x2F":
             raise AssertionError("track does not end with End of Track")
-    count_in = (N_LONG + N_SHORT) * division
+    count_in = (N_LONG * LONG_GAP + N_SHORT * SHORT_GAP) * division
     found = [(tick, ev[1]) for tick, _, ev in tracks[0]
              if tick < count_in and ev[0] == (0x90 | CHANNEL) and ev[2] > 0
              and ev[1] in (LONG_NOTE, SHORT_NOTE)]
@@ -211,9 +215,10 @@ def main(argv):
     beat = division
     expected = []
     for i in range(N_LONG):
-        expected.append((i * beat, LONG_NOTE))
+        expected.append((i * LONG_GAP * beat, LONG_NOTE))
+    short_start = N_LONG * LONG_GAP * beat
     for i in range(N_SHORT):
-        expected.append(((N_LONG + i) * beat, SHORT_NOTE))
+        expected.append((short_start + i * SHORT_GAP * beat, SHORT_NOTE))
     verify(dst, division, sum(len(t) for t in tracks), added, expected)
 
     tempo_us = 500000
@@ -225,7 +230,6 @@ def main(argv):
           f"{60000000 / tempo_us:.1f} BPM")
     print(f"count-in: {N_LONG} long + {N_SHORT} short ticks, "
           f"{shift} ticks ({seconds:.2f} s)")
-    print("verified: notes, event counts and End of Track are intact")
     return 0
 
 
