@@ -2,7 +2,6 @@
 """Prepend a 6-click count-in to a Standard MIDI File.
 
 Two long ticks, then four short ticks, one beat apart, on GM percussion
-(channel 10): side stick for long, closed hi-hat for short.
 
 Usage:
     python3 prepend_ticks.py INPUT.mid [OUTPUT.mid]
@@ -17,8 +16,8 @@ from pathlib import Path
 # Count-in definition. Change these if you want another feel.
 N_LONG, N_SHORT = 2, 4
 CHANNEL = 9                      # 0-based: MIDI channel 10, GM percussion
-LONG_NOTE, SHORT_NOTE = 37, 42   # side stick, closed hi-hat
-LONG_VEL, SHORT_VEL = 110, 80
+LONG_NOTE, SHORT_NOTE = 42, 42   # closed hi-hat
+LONG_VEL, SHORT_VEL = 100, 100
 
 
 def read_vlq(data, pos):

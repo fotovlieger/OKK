@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Scale the tempo of a MIDI file. Usage: tempo.py in.mid out.mid FACTOR
+"""Scale the tempo of a MIDI file. Usage: change_tempo.py in.mid out.mid FACTOR
 
 FACTOR > 1 is faster, < 1 is slower. Tempo meta events are scaled, so any
 tempo changes inside the file are preserved.
